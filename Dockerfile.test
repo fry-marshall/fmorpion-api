@@ -1,0 +1,12 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Étape 1 : copier tout
+COPY . .
+
+# Étape 2 : installer les modules
+RUN npm install
+
+# Étape 3 : builder le projet
+RUN npm run build

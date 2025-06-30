@@ -1,4 +1,4 @@
-import { Party } from "src/party/party.entity";
+import { Party } from "../party/party.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 

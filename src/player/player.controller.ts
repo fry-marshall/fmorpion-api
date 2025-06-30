@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { AuthDto } from "./dto/signup.dto";
+import { AuthDto } from "./dto/auth.dto";
 import { PlayerService } from "./player.service";
-import { JwtService } from "@nestjs/jwt";
 
 @Controller('players')
 export class PlayerController {

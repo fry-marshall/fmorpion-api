@@ -2,17 +2,19 @@ services:
   db:
     image: postgres:15
     restart: always
-    container_name: fmorpion_db
+    container_name: postgres_db_fmorpion_test
     ports:
       - $DB_HOST_PORT:$DB_CONTAINER_PORT
+    env_file:
+      - .env.test
     environment:
       - POSTGRES_USER=$DB_USERNAME
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_DB=$DB_NAME
     volumes:
-      - pgmorpion:/var/lib/postgresql/data
+      - pgmorpiontest:/var/lib/postgresql/data
     networks:
-      - fmorpion_network
+      - api-fmorpion-network-test
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "$DB_USERNAME"]
       interval: 5s
@@ -22,25 +24,26 @@ services:
   api:
     build:
       context: .
-      target: dev
-    container_name: fmorpion_api
+      dockerfile: ./Dockerfile.test
+    container_name: fmorpion_api_test
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - .:/app
-      - .env.prod:/app/.env
     ports:
       - $PORT:$PORT
+    env_file:
+      - .env.test
     environment:
-      - NODE_ENV=dev
+      - NODE_ENV=test
     networks:
-      - fmorpion_network
-    command: ["npm", "run", "start:dev"]
+      - api-fmorpion-network-test
+    command: ["npm", "run", "test:e2e:watch"]
 
 networks:
-  fmorpion_network:
+  api-fmorpion-network-test:
     driver: bridge
 
 volumes:
-  pgmorpion:
+  pgmorpiontest:

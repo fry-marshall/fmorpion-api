@@ -5,15 +5,17 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Player } from './player/player.entity';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from './common/strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { PlayerModule } from './player/player.module';
+import { PartyModule } from './party/party.module';
+import { Party } from './party/party.entity';
 
 const NODE_ENV = process.env.NODE_ENV || 'dev';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       envFilePath: `.env`,
       validationSchema: Joi.object({
@@ -37,15 +39,18 @@ const NODE_ENV = process.env.NODE_ENV || 'dev';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: NODE_ENV === 'dev',
+      synchronize: NODE_ENV !== 'prod',
       entities: [
-        Player
+        Player,
+        Party
       ]
     }),
     JwtModule.register({}),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PlayerModule,
+    PartyModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [AppService],
 })
 export class AppModule { }

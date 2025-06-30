@@ -1,7 +1,7 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Player } from "./player.entity";
 import { Repository } from "typeorm";
-import { AuthDto } from "./dto/signup.dto";
+import { AuthDto } from "./dto/auth.dto";
 import { ConflictException, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 
@@ -29,7 +29,7 @@ export class PlayerService{
         await this.playerRepository.save(player);
 
         return {
-            message: 'pseudo created successfully'
+            message: 'Player created successfully'
         }
     }
 
