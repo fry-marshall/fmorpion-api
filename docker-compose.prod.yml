@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    container_name: fmorpion_db
+    ports:
+      - $DB_HOST_PORT:$DB_CONTAINER_PORT
+    environment:
+      - POSTGRES_USER=$DB_USERNAME
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+    volumes:
+      - pgmorpion:/var/lib/postgresql/data
+    networks:
+      - fmorpion_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$DB_USERNAME"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: frymarshall/fmorpion_api
+    container_name: fmorpion_api
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .env.prod:/app/.env
+      - ./firebase-sdk.json:/app/firebase-sdk.json
+    ports:
+      - $PORT:$PORT
+    environment:
+      - NODE_ENV=prod
+    networks:
+      - fmorpion_network
+    command: ["npm", "run", "start:prod"]
+
+networks:
+  fmorpion_network:
+    driver: bridge
+
+volumes:
+  pgmorpion:
