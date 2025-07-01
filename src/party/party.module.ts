@@ -3,12 +3,13 @@ import { PartyController } from "./party.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Party } from "./party.entity";
 import { Player } from "../player/player.entity";
+import { PartyService } from "./party.service";
 
 @Module({
     controllers: [PartyController],
     imports: [
         TypeOrmModule.forFeature([Party, Player])
     ],
-    providers: []
+    providers: [PartyService]
 })
 export class PartyModule{}

@@ -11,11 +11,11 @@ export class Player{
     pseudo: string;
 
     @OneToMany(() => Party, party => party.player1)
-    partiesAsPlayer1: Party[];
+    partiesAsPlayer1?: Party[];
 
     @OneToMany(() => Party, party => party.player2)
-    partiesAsPlayer2: Party[];
+    partiesAsPlayer2?: Party[];
 
     @OneToMany(() => Party, party => party.winner)
-    partiesAsWinner: Party[];
+    partiesAsWinner?: Party[];
 }

@@ -25,6 +25,6 @@ export class Party{
     @ManyToOne(() => Player, player => player.partiesAsWinner)
     winner: Player;
 
-    @Column({ enum: PartyState })
+    @Column({ enum: PartyState, default: PartyState.PENDING_PLAYER })
     partyState: PartyState
 }
