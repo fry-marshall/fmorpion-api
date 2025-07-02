@@ -1,0 +1,38 @@
+name: Push And Deploy to production on Release
+
+on:
+  release:
+    types:
+      - published
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      push_api:
+        description: 'Push Api Docker Image'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+
+  push-api-image:
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.push_api == 'true') ||
+      (github.event_name == 'release' && needs.check_tag.outputs.tag != '')
+    uses: ./.github/workflows/push-image.template.yml
+    with:
+      folder: fmorpion-api
+    secrets: 
+      GH_TOKEN: ${{ secrets.PAT }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  deploy-api-image:
+    needs: push-api-image
+    uses: ./.github/workflows/api-production.template.yml
+    with:
+      folder: fmorpion-api
+      hasfirebase: false
+    secrets:
+      inherit

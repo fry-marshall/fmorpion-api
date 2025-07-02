@@ -1,0 +1,64 @@
+name: Api production
+
+on:
+  workflow_call:
+    inputs:
+      folder:
+        required: false
+        type: string
+      hasfirebase:
+        required: false
+        default: false
+        type: boolean
+      hasdbcron:
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Decrypt .env.gpg
+        run: |
+          cd "${{ inputs.folder }}"
+          echo "${{ secrets.ENV_SECRET_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o .env.prod -d .env.prod.gpg
+
+      - name: Decrypt firebase-sdk.json.gpg
+        if: ${{ inputs.hasfirebase == true }}
+        run: |
+          cd "${{ inputs.folder }}"
+          echo "${{ secrets.ENV_SECRET_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o firebase-sdk.json -d firebase-sdk.json.gpg
+
+      - name: Copy files ( docker, .env, ...)
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
+          cd "${{ inputs.folder }}"
+          scp -P ${{ secrets.VPS_PORT }} .env.prod firebase-sdk.json docker-compose.prod.yml Makefile ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
+
+      - name: Copy backup folder if needed
+        if: ${{ inputs.hasdbcron == true }}
+        run: |
+          cd "${{ inputs.folder }}"
+          scp -r -P ${{ secrets.VPS_PORT }} backup-scripts .s3cfg ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
+
+      - name: Log in to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          port: ${{ secrets.VPS_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Folder = '${{ inputs.folder }}'"
+            cd /home/${{ inputs.folder }} || { echo "Folder not found"; exit 1; }
+            echo "Login docker"
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "Run make prod"
+            make prod
