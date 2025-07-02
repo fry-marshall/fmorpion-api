@@ -23,7 +23,7 @@ export class Party{
     player2: Player;
 
     @ManyToOne(() => Player, player => player.partiesAsWinner)
-    winner: Player;
+    winner?: Player;
 
     @Column({ enum: PartyState, default: PartyState.PENDING_PLAYER })
     partyState: PartyState
