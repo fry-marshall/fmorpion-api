@@ -24,13 +24,11 @@ jobs:
 
       - name: Decrypt .env.gpg
         run: |
-          cd "${{ inputs.folder }}"
           echo "${{ secrets.ENV_SECRET_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o .env.prod -d .env.prod.gpg
 
       - name: Decrypt firebase-sdk.json.gpg
         if: ${{ inputs.hasfirebase == true }}
         run: |
-          cd "${{ inputs.folder }}"
           echo "${{ secrets.ENV_SECRET_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o firebase-sdk.json -d firebase-sdk.json.gpg
 
       - name: Copy files ( docker, .env, ...)
@@ -39,13 +37,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
-          cd "${{ inputs.folder }}"
           scp -P ${{ secrets.VPS_PORT }} .env.prod firebase-sdk.json docker-compose.prod.yml Makefile ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
 
       - name: Copy backup folder if needed
         if: ${{ inputs.hasdbcron == true }}
         run: |
-          cd "${{ inputs.folder }}"
           scp -r -P ${{ secrets.VPS_PORT }} backup-scripts .s3cfg ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
 
       - name: Log in to VPS

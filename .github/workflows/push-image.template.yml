@@ -34,7 +34,4 @@ jobs:
         run: |
           echo "Pushing image"
           echo "${{ inputs.folder }}"
-          if [ -n "${{ inputs.folder }}" ]; then
-            cd "${{ inputs.folder }}"
-          fi
           make push-image
