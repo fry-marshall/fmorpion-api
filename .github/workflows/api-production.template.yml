@@ -39,11 +39,6 @@ jobs:
           ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
           scp -P ${{ secrets.VPS_PORT }} .env.prod docker-compose.prod.yml Makefile ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
 
-      - name: Copy backup folder if needed
-        if: ${{ inputs.hasdbcron == true }}
-        run: |
-          scp -r -P ${{ secrets.VPS_PORT }} backup-scripts .s3cfg ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:/home/${{ inputs.folder }}/
-
       - name: Log in to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
