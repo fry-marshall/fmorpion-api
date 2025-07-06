@@ -19,4 +19,4 @@ COPY . .
 RUN npm install -g @nestjs/cli
 RUN npm run build
 
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:migrate"]
