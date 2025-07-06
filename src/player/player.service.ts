@@ -28,8 +28,25 @@ export class PlayerService{
         
         await this.playerRepository.save(player);
 
+        const payload = {
+            id: player.id,
+            pseudo: player.pseudo,
+        };
+
+        const access_token = await this.jwtService.sign(payload, {
+            secret: process.env.ACCESS_TOKEN_SECRET,
+            expiresIn: '1h'
+        });
+
+         const refresh_token = await this.jwtService.sign(payload, {
+            secret: process.env.REFRESH_TOKEN_SECRET,
+            expiresIn: '7d'
+        });
+
         return {
-            message: 'Player created successfully'
+            message: 'Player created successfully',
+            access_token,
+            refresh_token
         }
     }
 
