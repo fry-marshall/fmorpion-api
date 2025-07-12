@@ -1,9 +1,7 @@
-import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import * as dotenv from 'dotenv';
 import { Player } from './player/player.entity';
 import { Party } from './party/party.entity';
-import * as dotenv from 'dotenv';
-
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -15,6 +13,9 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: false,
   logging: true,
-  entities: [Player, Party],
+  entities: [
+    Player,
+    Party
+  ],
   migrations: ['dist/migrations/*.js'],
 });

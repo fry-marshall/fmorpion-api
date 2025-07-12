@@ -39,7 +39,7 @@ const NODE_ENV = process.env.NODE_ENV || 'dev';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: NODE_ENV !== 'prod',
+      synchronize: false,//NODE_ENV !== 'prod',
       entities: [
         Player,
         Party

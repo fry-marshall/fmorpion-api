@@ -107,6 +107,7 @@ export class PartyService {
         });
 
         return {
+            id: party.id,
             message: 'Party joined successfully'
         };
         
