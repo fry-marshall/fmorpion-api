@@ -18,6 +18,8 @@ RUN npm ci --omit=dev
 COPY . .
 RUN npm install -g @nestjs/cli
 
+RUN npx ts-node ./node_modules/typeorm/cli.js migration:generate src/migrations/new_migration -d src/data-source.ts
+
 RUN npm run build
 
 CMD ["npm", "run", "start:migrate"]
