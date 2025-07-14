@@ -102,10 +102,10 @@ export class PartyService {
             throw new ForbiddenException('You cannot join your own party');
         }
 
-        await this.partyRepository.update(party, {
-            player2: player,
-            partyState: PartyState.IN_PROGRESS
-        });
+        party.player2 = player;
+        party.partyState = PartyState.IN_PROGRESS;
+
+        await this.partyRepository.save(party);
 
         return {
             id: party.id,
