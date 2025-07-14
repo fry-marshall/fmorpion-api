@@ -58,6 +58,11 @@ export class GameGateway implements OnGatewayConnection {
       return; // player not authorized
     }
 
+    if(party.player2?.id !== playerId){
+      party.partyState = PartyState.IN_PROGRESS
+      await this.partyRepository.save(party)
+    }
+
     const player = await this.playerRepository.findOne({ where: { id: playerId } });
 
     const room = `party-${data.partyId}`;

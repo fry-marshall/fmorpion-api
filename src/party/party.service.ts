@@ -103,7 +103,6 @@ export class PartyService {
         }
 
         party.player2 = player;
-        party.partyState = PartyState.IN_PROGRESS;
 
         await this.partyRepository.save(party);
 
