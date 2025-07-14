@@ -51,7 +51,7 @@ export class GameGateway implements OnGatewayConnection {
     if (!party) return;
 
     const playerId = client.data.playerId;
-    if (party.player1.id !== playerId && party.player2.id !== playerId) {
+    if (party.player1?.id !== playerId && party.player2?.id !== playerId) {
       return; // player not authorized
     }
 
