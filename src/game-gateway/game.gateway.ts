@@ -48,9 +48,12 @@ export class GameGateway implements OnGatewayConnection {
       where: { id: data.partyId, partyState: PartyState.PENDING_PLAYER },
       relations: ['player1', 'player2'],
     });
+    console.log("party", party);
     if (!party) return;
 
     const playerId = client.data.playerId;
+    console.log("party.player1?.id !== playerId && party.player2?.id !== playerId", party.player1?.id !== playerId && party.player2?.id !== playerId);
+
     if (party.player1?.id !== playerId && party.player2?.id !== playerId) {
       return; // player not authorized
     }
