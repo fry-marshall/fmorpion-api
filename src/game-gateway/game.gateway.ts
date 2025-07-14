@@ -59,6 +59,7 @@ export class GameGateway implements OnGatewayConnection {
 
     const room = `party-${data.partyId}`;
     client.join(room);
+    console.log("party really joined", room)
     client.to(room).emit('partyJoined', { playerId, player: player?.pseudo });
   }
 
