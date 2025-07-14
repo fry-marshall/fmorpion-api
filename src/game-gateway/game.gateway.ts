@@ -58,7 +58,7 @@ export class GameGateway implements OnGatewayConnection {
       return; // player not authorized
     }
 
-    if(party.player2?.id !== playerId){
+    if(party.player2?.id === playerId){
       party.partyState = PartyState.IN_PROGRESS
       await this.partyRepository.save(party)
     }
