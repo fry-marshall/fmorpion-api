@@ -51,14 +51,15 @@ export class GameGateway implements OnGatewayConnection {
     if (!party) return;
 
     const playerId = client.data.playerId;
-    console.log("Player", playerId);
     if (party.player1.id !== playerId && party.player2.id !== playerId) {
       return; // player not authorized
     }
 
+    const player = await this.playerRepository.findOne({ where: { id: playerId } });
+
     const room = `party-${data.partyId}`;
     client.join(room);
-    client.to(room).emit('partyJoined', { playerId });
+    client.to(room).emit('partyJoined', { playerId, player: player?.pseudo });
   }
 
   @SubscribeMessage('playParty')

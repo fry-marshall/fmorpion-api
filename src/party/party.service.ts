@@ -52,7 +52,8 @@ export class PartyService {
 
         return {
             message: 'Party created successfully',
-            code: party.code
+            code: party.code,
+            id: party.id
         };
     }
 
@@ -108,6 +109,8 @@ export class PartyService {
 
         return {
             id: party.id,
+            player1: party.player1.pseudo,
+            player2: player.pseudo,
             message: 'Party joined successfully'
         };
         
