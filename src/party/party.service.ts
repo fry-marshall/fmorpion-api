@@ -52,11 +52,11 @@ export class PartyService {
 
     await this.partyRepository.save(party);
 
-    const timeout = setTimeout(() => {
+    /* const timeout = setTimeout(() => {
       this.checkGameTimeout(party.id);
     }, 15 * 60 * 1000); // 15 minutes
 
-    this.schedulerRegistry.addTimeout(`check-game-${party.id}`, timeout);
+    this.schedulerRegistry.addTimeout(`check-game-${party.id}`, timeout); */
 
     return {
       message: 'Party created successfully',
@@ -92,6 +92,7 @@ export class PartyService {
     ].map(party => {
       return {
         id: party.id,
+        code: party.code,
         player1: party.player1?.pseudo,
         player2: party.player2?.pseudo,
         winner: party.winner?.pseudo,
