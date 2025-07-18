@@ -33,15 +33,15 @@ export class PlayerService{
             pseudo: player.pseudo,
         };
 
-        const access_token = await this.jwtService.sign(payload, {
+        const access_token = this.jwtService.sign(payload, {
             secret: process.env.ACCESS_TOKEN_SECRET,
-            expiresIn: '1h'
+            expiresIn: '14d'
         });
 
-         const refresh_token = await this.jwtService.sign(payload, {
-            secret: process.env.REFRESH_TOKEN_SECRET,
-            expiresIn: '7d'
-        });
+         const refresh_token = this.jwtService.sign(payload, {
+             secret: process.env.REFRESH_TOKEN_SECRET,
+             expiresIn: '30d'
+         });
 
         return {
             message: 'Player created successfully',
@@ -64,17 +64,27 @@ export class PlayerService{
             pseudo: player.pseudo,
         };
 
-        const access_token = await this.jwtService.sign(payload, {
+        const access_token = this.jwtService.sign(payload, {
             secret: process.env.ACCESS_TOKEN_SECRET,
-            expiresIn: '1h'
+            expiresIn: '14d'
         });
 
-         const refresh_token = await this.jwtService.sign(payload, {
-            secret: process.env.REFRESH_TOKEN_SECRET,
-            expiresIn: '7d'
-        });
+         const refresh_token = this.jwtService.sign(payload, {
+             secret: process.env.REFRESH_TOKEN_SECRET,
+             expiresIn: '30d'
+         });
         
 
         return { access_token, refresh_token };
+    }
+
+    async getMe(playerId){
+        const player = await this.playerRepository.findOne({where: {id: playerId}});
+
+        if(!player){
+            throw new NotFoundException('Player not found')
+        }
+
+        return player
     }
 }

@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthDto } from "./dto/auth.dto";
 import { PlayerService } from "./player.service";
-import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/common/guard/jwt-auth.guard";
 
 @ApiTags('players')
 @Controller('players')
@@ -85,6 +86,37 @@ export class PlayerController {
     @Post('signin')
     signin(@Body() authDto: AuthDto) {
         return this.playerService.signin(authDto)
+    }
+
+    @ApiOperation({ description: "Get player infos" })
+    @ApiBody({ type: AuthDto })
+    @ApiCreatedResponse({
+        description: "Get player infos successfully",
+        schema: {
+            example: {
+                is_error: false,
+                data: {
+                    id: "xxxxxxxx",
+                    pseudo: "toto"
+                },
+                statusCode: 200,
+            }
+        }
+    })
+    @ApiNotFoundResponse({
+        description: "Player not found",
+        schema: {
+            example: {
+                is_error: false,
+                message: "Player not found",
+                statusCode: 404,
+            }
+        }
+    })
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    getMe(@Req() req) {
+        return this.playerService.getMe(req.user.id)
     }
 
 }

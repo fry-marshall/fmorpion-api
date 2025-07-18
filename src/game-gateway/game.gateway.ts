@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { WebSocketGateway, OnGatewayConnection, WebSocketServer, SubscribeMessage } from "@nestjs/websockets";
-import { Server } from "http";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { Party, PartyState } from "../party/party.entity";
 import { Player } from "../player/player.entity";
 import { Repository } from "typeorm";
@@ -26,7 +25,7 @@ export class GameGateway implements OnGatewayConnection {
     private readonly partyRepository: Repository<Party>,
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
-  ) {}
+  ) { }
 
   async handleConnection(client: Socket) {
     try {
@@ -58,7 +57,7 @@ export class GameGateway implements OnGatewayConnection {
       return; // player not authorized
     }
 
-    if(party.player2?.id === playerId){
+    if (party.player2?.id === playerId) {
       party.partyState = PartyState.IN_PROGRESS
       await this.partyRepository.save(party)
     }
@@ -112,5 +111,10 @@ export class GameGateway implements OnGatewayConnection {
 
     const room = `party-${data.partyId}`;
     client.to(room).emit('partyFinished', { winner: playerId });
+  }
+
+  partyCanceled(data: { partyId: string }) {
+    const room = `party-${data.partyId}`;
+    this.server.to(room).emit('partyCanceled', { partyId: data.partyId });
   }
 }

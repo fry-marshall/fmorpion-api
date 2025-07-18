@@ -11,6 +11,7 @@ import { PlayerModule } from './player/player.module';
 import { PartyModule } from './party/party.module';
 import { Party } from './party/party.entity';
 import { GameGatewayModule } from './game-gateway/game-gateway.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const NODE_ENV = process.env.NODE_ENV || 'dev';
 
@@ -50,6 +51,7 @@ const NODE_ENV = process.env.NODE_ENV || 'dev';
     PlayerModule,
     PartyModule,
     GameGatewayModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
