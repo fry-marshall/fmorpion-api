@@ -70,6 +70,30 @@ export class GameGateway implements OnGatewayConnection {
     client.to(room).emit('partyJoined', { playerId, player: player?.pseudo });
   }
 
+  @SubscribeMessage('rejoinParty')
+  async handleRejoinParty(client: Socket, data: { partyId: string }) {
+    const party = await this.partyRepository.findOne({
+      where: { id: data.partyId },
+      relations: ['player1', 'player2'],
+    });
+    console.log("party", party);
+    if (!party || party?.partyState === PartyState.CANCELED || party?.partyState === PartyState.FINISHED) return;
+
+    const playerId = client.data.playerId;
+    console.log("party.player1?.id !== playerId && party.player2?.id !== playerId", party.player1?.id !== playerId && party.player2?.id !== playerId);
+
+    if (party.player1?.id !== playerId && party.player2?.id !== playerId) {
+      return; // player not authorized
+    }
+
+    const player = await this.playerRepository.findOne({ where: { id: playerId } });
+
+    const room = `party-${data.partyId}`;
+    client.join(room);
+    console.log("party really rejoined", room)
+    client.to(room).emit('partyJoined', { playerId, player: player?.pseudo });
+  }
+
   @SubscribeMessage('playParty')
   async handlePlayParty(client: Socket, data: { partyId: string; x: number; y: number }) {
     const party = await this.partyRepository.findOne({
