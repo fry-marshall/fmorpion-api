@@ -39,7 +39,7 @@ export class PartyService {
     }
 
     const hasPartyInProgress = player.partiesAsPlayer1?.some(party => party.partyState === PartyState.IN_PROGRESS || party.partyState === PartyState.PENDING_PLAYER) ||
-      player.partiesAsPlayer2?.some(party => party.partyState === PartyState.IN_PROGRESS || PartyState.PENDING_PLAYER);
+      player.partiesAsPlayer2?.some(party => party.partyState === PartyState.IN_PROGRESS || party.partyState === PartyState.PENDING_PLAYER);
 
     if (hasPartyInProgress) {
       throw new ForbiddenException('You cannot create a party when you have another in progress');
@@ -67,7 +67,6 @@ export class PartyService {
 
   async getParties(playerId: string) {
     const parties = await this.partyRepository.find();
-    console.log(parties)
     const player = await this.playerRepository.findOne({
       where: { id: playerId },
       relations: [
